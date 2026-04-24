@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="اكتشف أحدث الأغاني والفنانين على بطوط ميوزك">
+<title>الرئيسية — بطوط ميوزك</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/design-system.css">
+<link rel="stylesheet" href="../css/app.css">
+<style>
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  @media(max-width:480px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .greeting-banner {
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary-container) 0%, var(--secondary-container) 60%, #e040fb 100%);
+    padding: 32px; color: white; margin-bottom: 28px;
+    position: relative; overflow: hidden; min-height: 140px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .greeting-banner::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 200px; height: 200px; background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+  .greeting-banner::after {
+    content: ''; position: absolute; bottom: -60px; left: 30px;
+    width: 160px; height: 160px; background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .banner-text { position: relative; z-index: 1; }
+  .banner-icon {
+    width: 72px; height: 72px; border-radius: 20px;
+    background: rgba(255,255,255,0.2); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; color: white; position: relative; z-index: 1;
+    animation: float 4s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  /* Quick access row */
+  .quick-items {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 36px;
+  }
+  .quick-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 12px;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.8);
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .quick-item:hover { background: rgba(255,255,255,0.85); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,0.12); }
+  .quick-item-thumb {
+    width: 44px; height: 44px; border-radius: 10px;
+    overflow: hidden; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--primary-fixed), var(--secondary-fixed));
+    display: flex; align-items: center; justify-content: center;
+  }
+  .quick-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .quick-item-name { font-size: 14px; font-weight: 700; color: var(--on-surface); }
+
+  /* Genre chips */
+  .genre-scroll { margin-bottom: 28px; }
+
+  /* Loading skeleton */
+  .skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .skeleton-card { border-radius: 16px; overflow: hidden; }
+  .skeleton-thumb { aspect-ratio: 1; }
+  .skeleton-line { height: 14px; margin-top: 10px; border-radius: 6px; }
+  .skeleton-line-sm { height: 12px; margin-top: 6px; width: 70%; border-radius: 6px; }
+</style>
+</head>
+<body class="liquid-bg">
+<div class="ambient-blobs"></div>
+
+<div class="app-shell">
+  <!-- Sidebar slot -->
+  <div id="sidebar-slot"></div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-search">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" placeholder="ابحث عن أغنية، فنان، ألبوم..." id="topbar-search-input"
+               onkeydown="if(event.key==='Enter')goSearch(this.value)">
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-icon" onclick="window.location.href='../index.html'" title="الرئيسية">
+          <span class="material-symbols-outlined" style="font-size:20px">home</span>
+        </button>
+        <div class="topbar-avatar" title="الملف الشخصي">ب</div>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+
+      <!-- Greeting Banner -->
+      <div class="greeting-banner">
+        <div class="banner-text">
+          <div style="font-size:13px;opacity:0.85;margin-bottom:6px">مرحباً 👋</div>
+          <h1 class="text-headline-xl" style="color:white;margin-bottom:8px">اكتشف الجديد</h1>
+          <p style="font-size:14px;opacity:0.8">استمع لأحدث الأغاني الأكثر شعبية الآن</p>
+        </div>
+        <div class="banner-icon">
+          <span class="material-symbols-outlined" style="font-size:36px;font-variation-settings:'FILL' 1">headphones</span>
+        </div>
+      </div>
+
+      <!-- Quick Access -->
+      <div class="section-header">
+        <h2>مشغلة مؤخراً</h2>
+      </div>
+      <div class="quick-items" id="recent-list">
+        <div class="quick-item" style="cursor:default;opacity:0.6">
+          <div class="quick-item-thumb">
+            <span class="material-symbols-outlined" style="color:var(--outline)">history</span>
+          </div>
+          <div class="quick-item-name" style="color:var(--outline)">لم تشغل أي أغنية بعد</div>
+        </div>
+      </div>
+
+      <!-- Genre Filter -->
+      <div class="genre-scroll">
+        <div class="genre-scroll" id="genre-chips" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none">
+          <!-- chips filled by JS -->
+        </div>
+      </div>
+
+      <!-- Trending -->
+      <div class="section-header">
+        <h2>🔥 الأكثر شعبية</h2>
+        <a href="#" onclick="loadSection('trending')">عرض الكل</a>
+      </div>
+      <div class="cards-grid" id="trending-grid">
+        <div class="skeleton-grid" style="display:contents">
+          ${Array(8).fill(0).map(()=>`
+            <div>
+              <div class="skeleton skeleton-thumb" style="border-radius:12px"></div>
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-line-sm"></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="height:40px"></div>
+
+      <!-- New Releases -->
+      <div class="section-header">
+        <h2>✨ إصدارات جديدة</h2>
+        <a href="#" onclick="loadSection('new')">عرض الكل</a>
+      </div>
+      <div class="cards-grid" id="new-grid">
+        <div class="skeleton-grid" style="display:contents">
+          ${Array(8).fill(0).map(()=>`
+            <div>
+              <div class="skeleton skeleton-thumb" style="border-radius:12px"></div>
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-line-sm"></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="height:40px"></div>
+
+      <!-- By Genre -->
+      <div class="section-header">
+        <h2 id="genre-title">🎸 روك وبوب</h2>
+        <a href="#" onclick="loadSection('genre')">عرض الكل</a>
+      </div>
+      <div class="cards-grid" id="genre-grid">
+        <div class="skeleton-grid" style="display:contents">
+          ${Array(8).fill(0).map(()=>`
+            <div>
+              <div class="skeleton skeleton-thumb" style="border-radius:12px"></div>
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-line-sm"></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="height:32px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Player and mobile nav slots -->
+<div id="player-slot"></div>
+<div id="mobile-nav-slot"></div>
+
+<script src="../js/player.js"></script>
+<script src="../js/layout.js"></script>
+<script>
+// ─── Init Layout ───────────────────────────────────────
+Layout.inject('home');
+
+// ─── Genres ────────────────────────────────────────────
+const GENRES = [
+  { label: 'الكل', tag: '', icon: '🎵' },
+  { label: 'بوب', tag: 'pop', icon: '🎤' },
+  { label: 'روك', tag: 'rock', icon: '🎸' },
+  { label: 'إلكترونيك', tag: 'electronic', icon: '🎛️' },
+  { label: 'جاز', tag: 'jazz', icon: '🎺' },
+  { label: 'كلاسيكي', tag: 'classical', icon: '🎻' },
+  { label: 'هيب هوب', tag: 'hip-hop', icon: '🎧' },
+  { label: 'R&B', tag: 'rnb', icon: '🎶' },
+  { label: 'أكوستيك', tag: 'acoustic', icon: '🪕' },
+];
+
+let activeGenre = '';
+let allTracks = { trending: [], new: [], genre: [] };
+
+function buildGenreChips() {
+  const container = document.getElementById('genre-chips');
+  container.innerHTML = GENRES.map((g, i) => `
+    <button class="genre-chip ${i === 0 ? 'active' : ''}" data-tag="${g.tag}" onclick="onGenreClick(this,'${g.tag}','${g.label}')">
+      ${g.icon} ${g.label}
+    </button>
+  `).join('');
+}
+
+function onGenreClick(btn, tag, label) {
+  document.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  activeGenre = tag;
+  if (tag) {
+    document.getElementById('genre-title').textContent = `🎵 ${label}`;
+    loadGenreSection(tag);
+  } else {
+    document.getElementById('genre-title').textContent = '🎸 روك وبوب';
+    renderSection('genre', allTracks.genre);
+  }
+}
+
+// ─── Load Sections ──────────────────────────────────────
+async function initHome() {
+  buildGenreChips();
+  updateRecentList();
+
+  try {
+    const [trending, fresh] = await Promise.all([
+      BatootApp.getJamendoTrending(),
+      BatootApp.getJamendoNew(),
+    ]);
+    allTracks.trending = trending;
+    allTracks.new = fresh;
+    BatootApp.cacheTracks([...trending, ...fresh]);
+    renderSection('trending', trending.slice(0, 8));
+    renderSection('new', fresh.slice(0, 8));
+  } catch(e) {
+    console.error('[Home] Load error:', e);
+    showError('trending-grid');
+    showError('new-grid');
+  }
+
+  // Load rock genre
+  try {
+    const genre = await BatootApp.getJamendoByGenre('rock');
+    allTracks.genre = genre;
+    BatootApp.cacheTracks(genre);
+    renderSection('genre', genre.slice(0, 8));
+  } catch(e) {
+    showError('genre-grid');
+  }
+}
+
+async function loadGenreSection(tag) {
+  const grid = document.getElementById('genre-grid');
+  grid.innerHTML = skeletonCards(8);
+  try {
+    const tracks = await BatootApp.getJamendoByGenre(tag);
+    allTracks.genre = tracks;
+    BatootApp.cacheTracks(tracks);
+    renderSection('genre', tracks.slice(0, 8));
+  } catch(e) { showError('genre-grid'); }
+}
+
+function renderSection(section, tracks) {
+  const gridId = section + '-grid';
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+  if (!tracks.length) { grid.innerHTML = `<div style="color:var(--outline);font-size:14px;grid-column:1/-1;padding:20px">لا توجد نتائج</div>`; return; }
+  grid.innerHTML = BatootApp.renderMusicCards(tracks);
+}
+
+function showError(gridId) {
+  const g = document.getElementById(gridId);
+  if (g) g.innerHTML = `<div style="color:var(--outline);font-size:13px;grid-column:1/-1;padding:16px">⚠️ تعذر تحميل الأغاني. تحقق من الاتصال بالإنترنت.</div>`;
+}
+
+function skeletonCards(n) {
+  return Array(n).fill(0).map(() => `
+    <div>
+      <div class="skeleton" style="aspect-ratio:1;border-radius:12px"></div>
+      <div class="skeleton" style="height:14px;margin-top:10px;border-radius:6px"></div>
+      <div class="skeleton" style="height:12px;margin-top:6px;width:70%;border-radius:6px"></div>
+    </div>
+  `).join('');
+}
+
+function updateRecentList() {
+  const state = BatootApp.getState();
+  const recent = state.history.slice(0, 6);
+  const container = document.getElementById('recent-list');
+  if (!container || !recent.length) return;
+  container.innerHTML = recent.map(t => `
+    <div class="quick-item" onclick="BatootApp.play('${t.id}')">
+      <div class="quick-item-thumb">
+        ${t.image ? `<img src="${t.image}" alt="${t.title}">` : `<span class="material-symbols-outlined" style="color:var(--primary-container);font-size:20px;font-variation-settings:'FILL' 1">music_note</span>`}
+      </div>
+      <div>
+        <div class="quick-item-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px">${t.title}</div>
+        <div style="font-size:11px;color:var(--outline)">${t.artist}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function goSearch(q) {
+  if (q.trim()) window.location.href = `search.html?q=${encodeURIComponent(q.trim())}`;
+}
+
+function loadSection(type) { /* placeholder for "see all" */ }
+
+// ─── Start ──────────────────────────────────────────────
+initHome();
+</script>
+</body>
+</html>
